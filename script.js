@@ -6,11 +6,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const rotationControl = document.getElementById('rotation');
     const bgColorSelect = document.getElementById('bg-color');
     const downloadBtn = document.getElementById('download-btn');
+    const shareBtn = document.getElementById('share-btn');
+    const verticalControl = document.getElementById('vertical-position');
     
     let currentImage = null;
     let scale = 1;
     let rotation = 0;
     let bgType = 'transparent';
+    let verticalOffset = 0;
     
     // Set canvas size
     previewCanvas.width = 500;
@@ -22,6 +25,8 @@ document.addEventListener('DOMContentLoaded', function() {
     rotationControl.addEventListener('input', updateImage);
     bgColorSelect.addEventListener('change', updateImage);
     downloadBtn.addEventListener('click', downloadImage);
+    shareBtn.addEventListener('click', shareToWhatsApp);
+    verticalControl.addEventListener('input', updateImage);
     
     function handleImageUpload(e) {
         const file = e.target.files[0];
@@ -45,6 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
         scale = parseFloat(zoomControl.value);
         rotation = parseInt(rotationControl.value);
         bgType = bgColorSelect.value;
+        verticalOffset = parseInt(verticalControl.value);
         
         // Clear canvas
         ctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
@@ -86,7 +92,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const centerX = previewCanvas.width / 2;
         const centerY = previewCanvas.height / 2;
         
-        ctx.translate(centerX, centerY);
+        ctx.translate(centerX, centerY + verticalOffset);
         ctx.rotate(rotation * Math.PI / 180);
         ctx.scale(scale, scale);
         
@@ -160,7 +166,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const centerX = canvas.width / 2;
         const centerY = canvas.height / 2;
         
-        context.translate(centerX, centerY);
+        context.translate(centerX, centerY + verticalOffset);
         context.rotate(rotation * Math.PI / 180);
         context.scale(scale, scale);
         
@@ -184,5 +190,77 @@ document.addEventListener('DOMContentLoaded', function() {
         );
         
         context.setTransform(1, 0, 0, 1, 0, 0);
+    }
+
+    function fallbackShare(canvas) {
+        // Create a data URL
+        const dataUrl = canvas.toDataURL('image/png');
+        const message = 'Check out my new profile picture!';
+        
+        if (navigator.userAgent.match(/Mobile|Android|iPhone|iPad|iPod/i)) {
+            // Mobile device - use WhatsApp API with the image
+            const encodedMessage = encodeURIComponent(message);
+            const encodedImage = encodeURIComponent(dataUrl);
+            window.location.href = `whatsapp://send?text=${encodedMessage}&attachment=${encodedImage}`;
+        } else {
+            // Desktop - open WhatsApp web
+            const encodedMessage = encodeURIComponent(message + ' ' + dataUrl);
+            window.open(`https://web.whatsapp.com/send?text=${encodedMessage}`, '_blank');
+        }
+    }
+
+    function shareToWhatsApp() {
+        if (!currentImage) {
+            alert('Please upload an image first');
+            return;
+        }
+
+        const shareCanvas = document.createElement('canvas');
+        shareCanvas.width = 500;
+        shareCanvas.height = 500;
+        const shareCtx = shareCanvas.getContext('2d');
+
+        // Draw background
+        if (bgType === 'white') {
+            shareCtx.fillStyle = 'white';
+            shareCtx.fillRect(0, 0, shareCanvas.width, shareCanvas.height);
+        } else if (bgType === 'black') {
+            shareCtx.fillStyle = 'black';
+            shareCtx.fillRect(0, 0, shareCanvas.width, shareCanvas.height);
+        } else if (bgType === 'blur') {
+            shareCtx.filter = 'blur(10px)';
+            drawImageOnCanvas(shareCtx, shareCanvas);
+            shareCtx.filter = 'none';
+        }
+
+        // Draw image with clipping
+        shareCtx.save();
+        shareCtx.beginPath();
+        shareCtx.arc(shareCanvas.width/2, shareCanvas.height/2, shareCanvas.width/2, 0, Math.PI*2);
+        shareCtx.closePath();
+        shareCtx.clip();
+        
+        drawImageOnCanvas(shareCtx, shareCanvas);
+        shareCtx.restore();
+
+        // Try Web Share API first
+        shareCanvas.toBlob(async function(blob) {
+            const file = new File([blob], 'whatsapp-dp.png', { type: 'image/png' });
+            
+            try {
+                if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                    await navigator.share({
+                        files: [file],
+                        title: 'WhatsApp Profile Picture',
+                        text: 'Check out my new profile picture!'
+                    });
+                } else {
+                    fallbackShare(shareCanvas);
+                }
+            } catch (err) {
+                console.error('Sharing failed:', err);
+                fallbackShare(shareCanvas);
+            }
+        }, 'image/png');
     }
 });

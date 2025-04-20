@@ -3,8 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Share on WhatsApp</title>
+                <meta property="og:image" content="${dataUrl}">
+                <meta property="og:title" content="My WhatsApp Profile Picture">
+                <meta property="og:description" content="Check out my new profile picture!">
     <title>WhatsApp DP Adjuster</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="style.css">
+    
 </head>
 <body>
     <div class="container">
@@ -23,6 +28,11 @@
                 </div>
                 
                 <div class="tool-group">
+                    <label for="vertical-position">Vertical Position:</label>
+                    <input type="range" id="vertical-position" min="-100" max="100" value="0">
+                </div>
+                
+                <div class="tool-group">
                     <label for="rotation">Rotation:</label>
                     <input type="range" id="rotation" min="0" max="360" value="0">
                 </div>
@@ -36,8 +46,11 @@
                         <option value="blur">Blurred</option>
                     </select>
                 </div>
+
                 
                 <button id="download-btn">Download DP</button>
+                <!-- Add this after the download button in your tools section -->
+<button id="share-btn">Share to WhatsApp</button>
             </div>
             
             <div class="preview-area">
