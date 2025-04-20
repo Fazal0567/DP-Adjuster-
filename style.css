@@ -83,6 +83,7 @@ h1 {
 
 input[type="range"] {
     -webkit-appearance: none;
+    appearance: none;
     height: 4px;
     background: #00a884;
     border-radius: 2px;
