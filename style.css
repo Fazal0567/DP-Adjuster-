@@ -197,3 +197,7 @@ select {
         font-size: 14px;
     }
 }
+.tool-group input[type="range"]#horizontal-position {
+    width: 100%;
+    margin: 10px 0;
+}

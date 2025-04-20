@@ -264,3 +264,39 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 'image/png');
     }
 });
+document.addEventListener('DOMContentLoaded', function() {
+    // Add with other constants
+    const horizontalControl = document.getElementById('horizontal-position');
+    
+    // Add with other state variables
+    let horizontalOffset = 0;
+    
+    // Add with other event listeners
+    horizontalControl.addEventListener('input', updateImage);
+    
+    function updateImage() {
+        if (!currentImage) return;
+        
+        // Add with other control values
+        horizontalOffset = parseInt(horizontalControl.value);
+        // ...existing code...
+    }
+    
+    function drawImage() {
+        const centerX = previewCanvas.width / 2;
+        const centerY = previewCanvas.height / 2;
+        
+        // Update translation to include horizontal offset
+        ctx.translate(centerX + horizontalOffset, centerY + verticalOffset);
+        // ...existing code...
+    }
+    
+    function drawImageOnCanvas(context, canvas) {
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        
+        // Update translation in download/share function too
+        context.translate(centerX + horizontalOffset, centerY + verticalOffset);
+        // ...existing code...
+    }
+});
