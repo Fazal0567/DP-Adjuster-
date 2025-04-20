@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp DP Adjuster</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>WhatsApp DP Adjuster</h1>
+        
+        <div class="upload-section">
+            <input type="file" id="image-input" accept="image/*">
+            <label for="image-input" class="upload-btn">Choose Image</label>
+        </div>
+        
+        <div class="editor-container">
+            <div class="tools">
+                <div class="tool-group">
+                    <label for="zoom">Zoom:</label>
+                    <input type="range" id="zoom" min="0.5" max="3" step="0.1" value="1">
+                </div>
+                
+                <div class="tool-group">
+                    <label for="rotation">Rotation:</label>
+                    <input type="range" id="rotation" min="0" max="360" value="0">
+                </div>
+                
+                <div class="tool-group">
+                    <label for="bg-color">Background:</label>
+                    <select id="bg-color">
+                        <option value="transparent">Transparent</option>
+                        <option value="white">White</option>
+                        <option value="black">Black</option>
+                        <option value="blur">Blurred</option>
+                    </select>
+                </div>
+                
+                <button id="download-btn">Download DP</button>
+            </div>
+            
+            <div class="preview-area">
+                <canvas id="preview-canvas"></canvas>
+                <div class="circle-mask"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
